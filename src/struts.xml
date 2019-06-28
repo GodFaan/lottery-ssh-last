@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.devMode" value="true" />
+
+	<constant name="struts.objectFactory" value="spring"></constant>
+
+	<package name="default" namespace="/" extends="struts-default">
+		<!-- 配置自定义拦截器 -->
+		<interceptors>
+			<interceptor name="privilegeInterceptor"
+				class="com.itgodfan.interceptor.PrivilegeInterceptor" />
+			<interceptor name="privilegeInterceptor1"
+				class="com.itgodfan.interceptor.PrivilegeInterceptor1" />
+		</interceptors>
+		<global-results>
+			<result name="login" type="redirect">/com.itgodfan.action.UserLoginAction
+			</result>
+			<result name="error" type="redirect">/com.itgodfan.action.AdminLoginAction
+			</result>
+		</global-results>
+
+
+		<!-- class属性值是spring定义的Bean，当执行execute（）返回success时，控制转到另一个动作memberQuery -->
+		<action name="userRegister" class="userRegisterAction"
+			method="jieguo">
+			<result name="success">/WEB-INF/registerSuccessPage.jsp</result>
+			<result name="error">/WEB-INF/register2.jsp</result>
+			<result name="invalid.token" type="redirectAction">jumpToRegister</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="adminRegister" class="adminRegisterAction"
+			method="jieguo">
+			<result name="success">/WEB-INF/adminregisterSuccessPage.jsp</result>
+			<result name="error">/WEB-INF/adminregister.jsp</result>
+			<result name="invalid.token" type="redirectAction">beforeAdminRegister</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<!-- <action name="userRegister" class="userRegisterAction"> <result name="success" 
+			>/login.jsp</result> <result name="error" >/register.jsp</result> </action> -->
+		<action name="userLogin" class="userLoginAction" method="login">
+			<result name="success">/WEB-INF/loginSuccess.jsp</result>
+			<result name="error">/WEB-INF/login.jsp</result>
+			<result name="passworderror">/WEB-INF/login.jsp</result>
+			<!-- <result name="invalid.token" type="redirectAction">userLogin</result> -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="adminLogin" class="adminLoginAction"
+			method="login">
+			<result name="success">/WEB-INF/adminloginSuccess.jsp</result>
+			<result name="error">/WEB-INF/adminlogin.jsp</result>
+			<result name="passworderror">/WEB-INF/adminlogin.jsp</result>
+			<result name="invalid.token" type="redirectAction">adminLogin</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="beforeAdminLogin" class="beforeAdminLoginAction"
+			method="before">
+			<result name="success">/WEB-INF/adminlogin.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="beforeUserLogin" class="beforeUserLoginAction"
+			method="before">
+			<result name="success">/WEB-INF/login.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="beforeAdminRegister"
+			class="beforeAdminRegisterAction" method="before">
+			<result name="success">/WEB-INF/adminregister.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<!-- 关联彩票展示页面与相关action -->
+		<action name="showLottery" class="showLotteryAction"
+			method="show">
+			<result name="success">/WEB-INF/showLottery.jsp</result>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="addCart" class="addCartAction" method="cart">
+			<result name="success">/WEB-INF/showCart.jsp</result>
+			<result name="error">/WEB-INF/buLottery2.jsp</result>
+			<result name="invalid.token" type="redirectAction">showCart</result>
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="addCartAgain" class="addCartAgainAction"
+			method="cart">
+			<result name="success">/WEB-INF/showCart.jsp</result>
+			<result name="invalid.token" type="redirectAction">showCartAgain</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="cartDelete" class="cartDeleteAction"
+			method="delete">
+			<result name="success">/WEB-INF/showCart.jsp</result>
+			<result name="error">/WEB-INF/showCart2.jsp</result>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="deleteHistory" class="deleteHistoryAction"
+			method="delete">
+			<result name="success">/WEB-INF/lotteryHistory.jsp</result>
+			<result name="error">/WEB-INF/lotteryHistory2.jsp</result>
+			<!-- <result name="invalid.token" type="redirectAction">jumpToHistory</result> 
+				<interceptor-ref name="tokenSession"></interceptor-ref> -->
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="showCart" class="showCartAction" method="show">
+			<result name="success">/WEB-INF/showCart.jsp</result>
+			<result name="error">/WEB-INF/showCart2.jsp</result>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="showCartAgain" class="showCartAgainAction"
+			method="show">
+			<result name="success">/WEB-INF/showCart3.jsp</result>
+			<result name="error">/WEB-INF/showCart2.jsp</result>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="addHistory" class="addHistoryAction" method="add">
+			<result name="success">/WEB-INF/lotteryHistory.jsp</result>
+			<!-- <result name="invalid.token">/WEB-INF/lotteryHistory.jsp</result> 
+				<interceptor-ref name="tokenSession"></interceptor-ref> -->
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="searchForUser" class="searchForUserAction"
+			method="query">
+			<result name="success">/WEB-INF/searchUserlotteryHistory.jsp</result>
+			<result name="error">/WEB-INF/adminloginSuccess.jsp</result>
+			<result name="none">/WEB-INF/searchUserlotteryHistory.jsp</result>
+			<!-- <result name="invalid.token">/WEB-INF/lotteryHistory.jsp</result> 
+				<interceptor-ref name="tokenSession"></interceptor-ref> -->
+			<interceptor-ref name="privilegeInterceptor1" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<action name="buyLottery" class="buyLotteryAction" method="buy">
+			<result name="success">/WEB-INF/buyLottery.jsp</result>
+			<result name="invalid.token">/WEB-INF/page/buyLottery.jsp</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<action name="userQuery" class="userQueryAction" method="query">
+			<result name="success">/WEB-INF/displayAll.jsp</result>
+			<interceptor-ref name="privilegeInterceptor1" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="adminQuery" class="adminQueryAction"
+			method="query">
+			<result name="success">/WEB-INF/displayAllAdmin.jsp</result>
+			<result name="error">/WEB-INF/adminloginSuccess.jsp</result>
+			<interceptor-ref name="privilegeInterceptor1" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<action name="userDelete" class="userDeleteAction"
+			method="delete">
+			<result name="success" type="redirectAction">/userQuery</result>
+			<result name="error">/WEB-INF/adminloginSuccess.jsp</result>
+			<interceptor-ref name="privilegeInterceptor1" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<action name="userShow" class="userUpdateAction"
+			method="showuser">
+			<result name="success">/WEB-INF/update.jsp</result>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<action name="userUpdate" class="userUpdateAction"
+			method="update">
+			<result name="success" type="redirectAction">/userQuery</result>
+			<interceptor-ref name="tokenSession"></interceptor-ref>
+			<interceptor-ref name="privilegeInterceptor" />
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="userExit" class="com.itgodfan.action.UserExitAction"
+			method="exit">
+			<result name="success">/WEB-INF/login.jsp</result>
+		</action>
+		<action name="adminExit" class="com.itgodfan.action.AdminExitAction"
+			method="exit">
+			<result name="success">/WEB-INF/adminlogin.jsp</result>
+		</action>
+		<action name="jumpToUserPage" class="com.itgodfan.action.JumpToUserPageAction"
+			method="jump">
+			<result name="success">/WEB-INF/loginSuccess.jsp</result>
+		</action>
+		<action name="jumpToRegister" class="jumpToRegisterAction"
+			method="jump">
+			<result name="success">/WEB-INF/register.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="jumpToHistory" class="jumpToHistoryAction"
+			method="jump">
+			<result name="success">/WEB-INF/lotteryHistory.jsp</result>
+			<result name="error">/WEB-INF/lotteryHistory2.jsp</result>
+			<!-- <result name="invalid.token" >/WEB-INF/lotteryHistory.jsp</result> 
+				<interceptor-ref name="tokenSession"></interceptor-ref> -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		<action name="jumptoAdminManagePage"
+			class="jumptoAdminManagePageAction" method="jump">
+			<result name="success">/WEB-INF/adminloginSuccess.jsp</result>
+			<!-- <result name="invalid.token" >/WEB-INF/lotteryHistory.jsp</result> 
+				<interceptor-ref name="tokenSession"></interceptor-ref> -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+	</package>
+</struts>

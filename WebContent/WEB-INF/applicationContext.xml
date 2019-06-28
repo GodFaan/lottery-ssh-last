@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd  
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+	<bean id="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl"
+			value="jdbc:mysql://localhost:3306/lottery?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="user" value="root" />
+		<property name="password" value="2290085034" />
+		<property name="maxPoolSize" value="40" />
+		<property name="minPoolSize" value="1" />
+		<property name="initialPoolSize" value="2" />
+		<property name="maxIdleTime" value="20" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>/com/itgodfan/bean/User.hbm.xml</value>
+				<value>/com/itgodfan/bean/LotteryCart.hbm.xml</value>
+				<value>/com/itgodfan/bean/History.hbm.xml</value>
+				<value>/com/itgodfan/bean/Admin.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+				<prop key="hibernate.current_session_context_class">
+					org.springframework.orm.hibernate4.SpringSessionContext
+				</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="userDao" class="com.itgodfan.daoImpl.UserDaoImpl">
+		<!-- 构造方法注入会话工厂组件sessionFactory -->
+		<constructor-arg>
+			<ref bean="sessionFactory" />
+		</constructor-arg>
+	</bean>
+	<bean id="adminDao" class="com.itgodfan.daoImpl.AdminDaoImpl">
+		<!-- 构造方法注入会话工厂组件sessionFactory -->
+		<constructor-arg>
+			<ref bean="sessionFactory" />
+		</constructor-arg>
+	</bean>
+	<bean id="lotteryCartDao"
+		class="com.itgodfan.daoImpl.LotteryCartDaoImpl">
+		<constructor-arg>
+			<ref bean="sessionFactory" />
+		</constructor-arg>
+	</bean>
+	<bean id="historyDao"
+		class="com.itgodfan.daoImpl.HistoryDaoImpl">
+		<constructor-arg>
+			<ref bean="sessionFactory" />
+		</constructor-arg>
+	</bean>
+	<bean id="lotteryCart" class="com.itgodfan.bean.LotteryCart">
+	</bean>
+	<bean id="history" class="com.itgodfan.bean.History">
+	</bean>
+
+	<bean id="lotteryCartService"
+		class="com.itgodfan.serviceImpl.LotteryCartServiceImpl">
+		<!-- 设值注入DAO组件 -->
+		<property name="lotteryCartDao" ref="lotteryCartDao"></property>
+	</bean>
+	<bean id="historyService"
+		class="com.itgodfan.serviceImpl.HistoryServiceImpl">
+		<!-- 设值注入DAO组件 -->
+		<property name="historyDao" ref="historyDao"></property>
+	</bean>
+	
+	<bean id="cartDeleteAction"
+		class="com.itgodfan.action.CartDeleteAction" scope="prototype">
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+	</bean>
+	<bean id="addHistoryAction"
+		class="com.itgodfan.action.AddHistoryAction" scope="prototype">
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+		<property name="history" ref="history"></property>
+		<property name="historyService" ref="historyService"></property>
+	</bean>
+	<bean id="searchForUserAction"
+		class="com.itgodfan.action.SearchForUserAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+		<property name="historyService" ref="historyService"></property>
+	</bean>
+	<bean id="deleteHistoryAction"
+		class="com.itgodfan.action.DeleteHistoryAction" scope="prototype">
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+		<property name="history" ref="history"></property>
+		<property name="historyService" ref="historyService"></property>
+	</bean>
+	<bean id="userService"
+		class="com.itgodfan.serviceImpl.UserServiceImpl">
+		<!-- 设值注入DAO组件 -->
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	<bean id="adminService"
+		class="com.itgodfan.serviceImpl.AdminServiceImpl">
+		<!-- 设值注入DAO组件 -->
+		<property name="adminDao" ref="adminDao"></property>
+	</bean>
+	<bean id="userRegisterAction"
+		class="com.itgodfan.action.UserRegisterAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="adminRegisterAction"
+		class="com.itgodfan.action.AdminRegisterAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+	<bean id="addCartAction" class="com.itgodfan.action.AddCartAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+		<property name="lotteryCart" ref="lotteryCart"></property>
+	</bean>
+	<bean id="addCartAgainAction" class="com.itgodfan.action.AddCartAgainAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+		<property name="lotteryCart" ref="lotteryCart"></property>
+	</bean>
+	<bean id="showCartAction"
+		class="com.itgodfan.action.ShowCartAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+	</bean>
+	<bean id="showCartAgainAction"
+		class="com.itgodfan.action.ShowCartAgainAction" scope="prototype">
+		<!-- 设值注入业务逻辑组件 -->
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+	</bean>
+
+	<bean id="userLoginAction"
+		class="com.itgodfan.action.UserLoginAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="adminLoginAction"
+		class="com.itgodfan.action.AdminLoginAction" scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+
+	<bean id="userQueryAction"
+		class="com.itgodfan.action.UserQueryAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="adminQueryAction"
+		class="com.itgodfan.action.AdminQueryAction" scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+
+	<bean id="userDeleteAction"
+		class="com.itgodfan.action.UserDeleteAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+
+	<bean id="userUpdateAction"
+		class="com.itgodfan.action.UserUpdateAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="showLotteryAction"
+		class="com.itgodfan.action.ShowLotteryActoin" scope="prototype">
+	</bean>
+	<bean id="buyLotteryAction"
+		class="com.itgodfan.action.BuyLotteryAction" scope="prototype">
+	</bean>
+	<bean id="beforeAdminLoginAction"
+		class="com.itgodfan.action.BeforeAdminLoginAction" scope="prototype">
+	</bean>
+	<bean id="beforeUserLoginAction"
+		class="com.itgodfan.action.BeforeUserLoginAction" scope="prototype">
+	</bean>
+	<bean id="beforeAdminRegisterAction"
+		class="com.itgodfan.action.BeforeAdminRegisterAction" scope="prototype">
+	</bean>
+	<bean id="jumpToRegisterAction"
+		class="com.itgodfan.action.JumpToRegisterAction" scope="prototype">
+	</bean>
+	<bean id="jumptoAdminManagePageAction"
+		class="com.itgodfan.action.JumptoAdminManagePageAction" scope="prototype">
+	</bean>
+	<bean id="jumpToHistoryAction"
+		class="com.itgodfan.action.JumpToHistoryAction" scope="prototype">
+		<property name="lotteryCartService" ref="lotteryCartService"></property>
+		<property name="history" ref="history"></property>
+		<property name="historyService" ref="historyService"></property>
+	</bean>
+</beans>
