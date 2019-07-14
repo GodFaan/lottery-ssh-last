@@ -27,7 +27,7 @@ eclipse+MySQL+windows7
 ### 项目中出现的错误及解决方案：
 #### 1、	多次刷新页面，导致页面重复提交；
 #### 解决手段： A.	使用重定向手段 在表单提交成功之后，使用重定向来发送目标到新的action或者jsp页面，可以防止因为刷新页面导致的页面重复提交的问题，但是不能解决页面回退导致的重复提交问题，在查看购物车购物历史记录中使用这种方法，因为在遍历集合，没法实现添加token的操作。 B.	使用s:token生成令牌配合token拦截器 在struts2中有一个<s:token/> 标签。该标签通过生成一个独一无二令牌，它会同时放在session和表单的隐藏域中。在进行表单提交时，token拦截器会进行令牌的验证，如果两次的令牌匹配，那么本次表单提交成功，否则提交失败。当struts.xml 中配置的拦截器名称是token时，需要配置返回结果invalid.token的响应界面。提交失败后会出现一个 invalid.token 无效的结果视图。或者在struts.xml中配置拦截器名为tokenSession，此时无序配置相关的结果集，在多次提交表单后，原来的页面不发生任何变化。 
-#### 配制方法： (一)	在表单中加入<s:token/>，struts.xml中加入 ；以及对应的结果返回值， /XXXX.jsp,此时当二次提交请求的时候，会转到XXX.jsp。 
+#### 配置方法： (一)	在表单中加入<s:token/>，struts.xml中加入 ；以及对应的结果返回值， /XXXX.jsp,此时当二次提交请求的时候，会转到XXX.jsp。 
 #### (二)	在表单中加入<s:token/>，struts.xml中加入 ；以及对应的结果返回值， /XXXX.jsp,此时当二次提交请求的时候，页面不会发生变化。 C.	使用Javascript进行控制，设置一个变量，只允许访问一次（禁止后退）；
 #### 2、由于没有在spring中设置action类型（在application.xml中要将bean中设置scope="prototype"），从而导致出现以下错误： No result defined for action com.itgodfan.action.AdminRegisterAction and result input 原因：在SSH中， 当Action中的注入的属性第二次使用没有session时，这是因为spring管理Action默认为单例模式，当第一次使用到了属性，占用了session，所以第二次无法找到。
 #### 解决手段：Struts2 会对每个浏览器,产生一个Action的实例来处理.Spring的Ioc容器管理的bean默认是单实例的. 首先从数据安全性的问题上考虑，我们的Action应该保证是多例的，这样才不会出现数据问题。但是如果有的action比如只有admin才能操作，或者某些action，全站公用一个来提高性能，这样的话，就可以使用单例模式。 不过幸好，Spring的bean可以针对每一个设置它的scope，所以，上面的问题就不是问题了。如果用多例，就在spring的action bean配置的时候设置scope="prototype".好吧，问题到此结束。
