@@ -2,9 +2,9 @@
 ### 完成人：
 GodFan
 ### 开发环境：
-eclipse+MySQL+windows7+JSP
+eclipse+MySQL+windows7
 ### 使用的技术架构：
-#### Spring+hibernate+Struts+jsoup
+#### Spring+hibernate+Struts+jsoup+JSP
 #### 基于java的爬虫技术爬取相关的彩票网页，获取前30期的开奖结果并展示给顾客，通过对开奖结果的分析，获取过去三十期号码中的高频号码、低频号码，最终展示给顾客一注高频号码、一注低频号码、一注幸运号码（机选号码）。 
 #### 1、使用Struts2作为核心控制器；
 #### 2、使用Spring实现IOC和DI；
